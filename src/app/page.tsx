@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback } from 'react';
 
 // API 端点
 const API_ENDPOINT = '/api/remove-background';
@@ -20,8 +20,6 @@ export default function Home() {
   const [progress, setProgress] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
   const [isDragging, setIsDragging] = useState(false);
-  
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 验证文件
   const validateFile = (file: File): { valid: boolean; error?: string } => {
@@ -90,9 +88,6 @@ export default function Home() {
     }
   }, []);
 
-  // 点击上传
-  const handleClick = () => fileInputRef.current?.click();
-
   // 文件输入变化
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -135,7 +130,6 @@ export default function Home() {
     setProcessedImage(null);
     setProgress(0);
     setErrorMessage('');
-    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   return (
@@ -153,11 +147,10 @@ export default function Home() {
         {status === 'idle' && (
           <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
             <div
-              onClick={handleClick}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-              className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all duration-300 ${
+              className={`border-2 border-dashed rounded-xl p-12 text-center transition-all duration-300 ${
                 isDragging
                   ? 'border-blue-500 bg-blue-50 scale-[1.02]'
                   : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50'
@@ -165,20 +158,20 @@ export default function Home() {
             >
               <div className="text-6xl mb-4">📁</div>
               <h3 className="text-xl font-semibold text-gray-700 mb-2">拖拽图片到这里</h3>
-              <p className="text-gray-500 mb-4">或者点击选择文件</p>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                onChange={handleInputChange}
-                className="hidden"
-              />
-              <button
-                type="button"
-                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium transition-colors"
-              >
+              <p className="text-gray-500 mb-4">或者点击下方按钮选择文件</p>
+              
+              {/* 使用 label 包裹 input，更可靠 */}
+              <label htmlFor="fileInput" className="inline-block bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium transition-colors cursor-pointer">
                 选择图片
-              </button>
+                <input
+                  id="fileInput"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleInputChange}
+                  className="hidden"
+                />
+              </label>
+              
               <p className="text-xs text-gray-400 mt-4">支持 JPG、PNG、WebP，最大 10MB</p>
             </div>
           </div>
@@ -227,13 +220,13 @@ export default function Home() {
             <div className="flex justify-center gap-4 mt-6">
               <button
                 onClick={handleDownload}
-                className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-medium transition-colors flex items-center gap-2"
+                className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 cursor-pointer"
               >
                 <span>💾</span> 下载透明PNG
               </button>
               <button
                 onClick={handleReset}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-8 py-3 rounded-lg font-medium transition-colors"
+                className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-8 py-3 rounded-lg font-medium transition-colors cursor-pointer"
               >
                 处理新图片
               </button>
@@ -249,7 +242,7 @@ export default function Home() {
             <p className="text-red-600 mb-4">{errorMessage}</p>
             <button
               onClick={handleReset}
-              className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+              className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-medium transition-colors cursor-pointer"
             >
               重试
             </button>
